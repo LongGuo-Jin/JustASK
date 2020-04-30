@@ -50,11 +50,11 @@ if (!class_exists('WPQA')) :
 			$this->plugin_url = "https://2code.info/WPQA/";
 			$this->site_url = "https://2code.info/";
 			$this->wpqa_main_path = plugin_dir_path(dirname(__FILE__));
-			
-			$this->wpqa_get_functions();
-			$this->wpqa_get_shortcodes();
-			$this->wpqa_get_widgets();
-			$this->wpqa_get_post_type();
+
+            $this->wpqa_get_functions();
+            $this->wpqa_get_shortcodes();
+            $this->wpqa_get_widgets();
+            $this->wpqa_get_post_type();
 			
 			add_action('wp_enqueue_scripts',array($this,'wpqa_enqueue_style'));
 			add_action('admin_enqueue_scripts',array($this,'wpqa_enqueue_admin'));
@@ -62,6 +62,19 @@ if (!class_exists('WPQA')) :
 		/* The code that runs during plugin activation */
 		public static function activate() {
 			global $wp_version,$wpdb;
+            $charset_collate = $wpdb->get_charset_collate();
+            $ms_queries = "CREATE TABLE `{$wpdb->base_prefix}relation` (
+                  ID bigint(20) NOT NULL auto_increment,
+                  MY_ID bigint(20) NOT NULL ,
+                  Relation_ID bigint(20) NOT NULL ,
+                  Relation bigint(20) NOT NULL ,
+                  PRIMARY KEY  (ID)                
+                ) $charset_collate;";
+            // Now create tables.
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+//            wp_die($ms_queries);
+            $rrr = dbDelta( $ms_queries );
+
 			$wpdb->query($wpdb->prepare("ALTER TABLE ".$wpdb->users." CHANGE `user_nicename` `user_nicename` VARCHAR(255) NOT NULL DEFAULT %s;",''));
 			$wp_compatible_version = '4.0';
 			if (version_compare($wp_version,$wp_compatible_version,'<')) {
@@ -109,9 +122,12 @@ if (!class_exists('WPQA')) :
 		public function wpqa_get_post_type() {
 			require_once plugin_dir_path(dirname(__FILE__)).'functions/post_type.php';
 		}
+
+
 		/* The code that runs the enqueue style */
 		public function wpqa_enqueue_style() {
 			wp_enqueue_style('wpqa-custom-css',plugins_url('assets/css/custom.css',dirname(__FILE__)),array(),$this->plugin_version());
+			wp_enqueue_style('wpqa-swee-alert-css',plugins_url('assets/css/sweet-alert.css',dirname(__FILE__)),array(),$this->plugin_version());
 			$require_name_email    = get_option("require_name_email");
 			$comment_editor        = wpqa_options((is_singular("question")?"answer_editor":"comment_editor"));
 			$captcha_answer        = wpqa_options("captcha_answer");
@@ -124,8 +140,17 @@ if (!class_exists('WPQA')) :
 			$question_bump_points  = (int)wpqa_options("question_bump_points");
 			$ajax_file             = wpqa_options("ajax_file");
 			wp_enqueue_script("wpqa-scripts-js",plugins_url('assets/js/scripts.js',dirname(__FILE__)),array("jquery"),$this->plugin_version(),true);
+			wp_enqueue_script("wpqa-sweet-alert-js",plugins_url('assets/js/sweet-alert.js',dirname(__FILE__)),array("jquery"),$this->plugin_version(),true);
 			wp_enqueue_script("wpqa-custom-js",plugins_url('assets/js/custom.js',dirname(__FILE__)),array("jquery","jquery-ui-core","jquery-ui-sortable","jquery-ui-datepicker"),$this->plugin_version(),true);
+            wp_enqueue_script("my_ajax-js",plugins_url('assets/js/my_ajax_script.js',dirname(__FILE__)),array("jquery"),$this->plugin_version(),true);
+
+            $ajax_array = array(
+                'ajax_url' => admin_url("admin-ajax.php")
+            );
+            wp_localize_script( 'my_ajax-js', 'ajax_object', $ajax_array );
+
 			$ajax_file = ($ajax_file == "theme"?plugins_url('includes/ajax.php',dirname(__FILE__)):admin_url("admin-ajax.php"));
+
 			$wpqa_js = array(
 				'wpqa_dir'               => plugin_dir_url(dirname(__FILE__)),
 				'admin_url'              => $ajax_file,

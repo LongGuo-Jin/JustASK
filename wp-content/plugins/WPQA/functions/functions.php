@@ -169,6 +169,7 @@ if (!function_exists('wpqa_session')) :
 		}
 	}
 endif;
+
 /* Notifications && Activities */
 if (!function_exists('wpqa_notifications_activities')) :
 	function wpqa_notifications_activities($user_id = "",$another_user_id = "",$username = "",$post_id = "",$comment_id = "",$text = "",$type = "notifications",$more_text = "",$type_of_item = "",$new = true,$array = array()) {
@@ -536,6 +537,7 @@ if (!function_exists('wpqa_get_notifications')) :
 					$display_name = get_the_author_meta('display_name',$notification_result["another_user_id"]);
 				}
 				$output .= wpqa_show_notifications($notification_result,"on");
+//                $output .= json_encode($notification_result);
 			}
 			if ($more_button == "on" && $more_button_ul == true) {
 				$output .= "<li><a href='".esc_url(wpqa_get_profile_permalink($user_id,"notifications"))."'>".esc_html__("Show all notifications.","wpqa")."</a></li>";
@@ -562,6 +564,7 @@ if (!function_exists('wpqa_show_notifications')) :
 		}
 		
 		$result_icon = apply_filters("wpqa_notifications_icon",false,$whats_type_result["text"]);
+//		wp_die($whats_type_result["text"]);
 		if ($result_icon != "") {
 			$output .= "<i class='".$result_icon."'></i>";
 		}else if ($whats_type_result["text"] == "accepted_category" || $whats_type_result["text"] == "canceled_category") {
@@ -584,6 +587,8 @@ if (!function_exists('wpqa_show_notifications')) :
 			$output .= "<i class='icon-minus'></i>";
 		}else if ($whats_type_result["text"] == "answer_asked_question" || $whats_type_result["text"] == "select_best_answer" || $whats_type_result["text"] == "cancel_best_answer" || $whats_type_result["text"] == "answer_question" || $whats_type_result["text"] == "answer_question_follow" || $whats_type_result["text"] == "approved_answer" || $whats_type_result["text"] == "approved_comment") {
 			$output .= "<i class='icon-comment'></i>";
+		}else if($whats_type_result["post_id"]=="relation_link" && !empty($whats_type_result["another_user_id"])){
+		    $output .= "<i class='icon-user'></i>";
 		}else if (!empty($whats_type_result["post_id"])) {
 			$output .= "<i class='icon-sound'></i>";
 		}else if (!empty($whats_type_result["comment_id"])) {
@@ -597,7 +602,30 @@ if (!function_exists('wpqa_show_notifications')) :
 		}
 		
 		$output .= "<div>";
-		if (!empty($whats_type_result["another_user_id"])) {
+		if($whats_type_result["post_id"]=="relation_link" && !empty($whats_type_result["another_user_id"])){
+		    $from_userid = $whats_type_result["another_user_id"];
+		    $defaults = array(
+			'user_id'   => '',
+			'size'      => '',
+			'user_name' => '',
+			'user'      => '',
+			'post'      => '',
+			'comment'   => '',
+			'email'     => '',
+            );
+		    $args = wp_parse_args(array("user_id" => $from_userid,"size" => 120) ,$defaults );
+		    $from_avatar_image = "'".wpqa_get_user_avatar_link($args)."'";
+		    //$from_avatar_image = wpqa_get_user_avatar();
+		    $my_id = $whats_type_result['user_id'];
+		    $my_role = "'".get_the_author_meta('user_role',$my_id)."'";
+		    $from_user_role = "'".get_the_author_meta('user_role',$from_userid)."'";
+		    $from_username = "'".get_the_author_meta('first_name',$from_userid);
+		    $from_username .= get_the_author_meta('last_name',$from_userid)."'";
+
+            $output .= '<p class="notification_relation_link_from" onclick="notification_relation_link_clicked('.$from_userid.','.$from_avatar_image.','.$from_username.','.$my_role.','.$from_user_role.')"> You are invited for relation from '.$from_username.' </p>';
+		}
+
+		if (!empty($whats_type_result["another_user_id"]) && $whats_type_result["post_id"]!= "relation_link") {
 			$wpqa_profile_url = wpqa_profile_url($whats_type_result["another_user_id"]);
 			$display_name = get_the_author_meta('display_name',$whats_type_result["another_user_id"]);
 		}
@@ -620,15 +648,15 @@ if (!function_exists('wpqa_show_notifications')) :
 				$output .= esc_html__("has","wpqa");
 			}else if (!empty($whats_type_result["username"])) {
 				$output .= esc_attr($whats_type_result["username"])." ";
-			}else {
-				$output .= esc_html__("Deleted user","wpqa")." -";
 			}
 		}
 		
 		$output .= " ";
-		if (!empty($whats_type_result["post_id"])) {
-			$get_the_permalink = get_the_permalink($whats_type_result["post_id"]);
-			$get_post_status = get_post_status($whats_type_result["post_id"]);
+		{
+		    if (!empty($whats_type_result["post_id"]) ) {
+                $get_the_permalink = get_the_permalink($whats_type_result["post_id"]);
+                $get_post_status = get_post_status($whats_type_result["post_id"]);
+			}
 		}
 		if (!empty($whats_type_result["comment_id"])) {
 			$get_comment = get_comment($whats_type_result["comment_id"]);
@@ -3614,7 +3642,7 @@ if (!function_exists('wpqa_head_content')) :
 					<div class="panel-pop-content">
 						<?php echo do_shortcode("[wpqa_signup]");?>
 					</div><!-- End pop-border-radius -->
-				</div><!-- End pop-border-radius -->
+
 				<?php if ($its_not_login == true || $signup_style != "") {?>
 					<div class="pop-footer<?php echo($signup_style != "style_2"?"":" wpqa_hide")?>">
 						<?php echo esc_html__( 'Have an account?', 'wpqa' ).' <a href="#" class="'.($its_not_login == true?'login-panel-un':'login-panel').'">'.esc_html__( 'Sign In Now', 'wpqa' ).'</a>';?>
@@ -4782,4 +4810,145 @@ if (!function_exists('wpqa_token')) :
 		}
 		return $token;
 	}
-endif;?>
+endif;
+
+add_action( 'wp_ajax_parent_form_process', 'parent_form_process' );    //execute when wp logged in
+add_action( 'wp_ajax_nopriv_parent_form_process', 'parent_form_process');
+
+add_action( 'wp_ajax_relation_notify_process', 'relation_notify_process' );    //execute when wp logged in
+add_action( 'wp_ajax_nopriv_relation_notify_process', 'relation_notify_process');
+
+add_action( 'wp_ajax_send_accept_notification', 'send_accept_notification' );    //execute when wp logged in
+add_action( 'wp_ajax_nopriv_send_accept_notification', 'send_accept_notification');
+
+if (!function_exists('relation_notify_process')):
+    function relation_notify_process() {
+
+        $to_user_id = $_POST['to_user_id'];
+        $my_id = $_POST['my_id'];
+        $username = get_the_author_meta('first_name',$my_id);
+        $username .=get_the_author_meta('last_name',$my_id);
+        wpqa_notifications_activities($to_user_id, $my_id,"" ,"relation_link" ,"" ,`You get Notification from $username`,"notifications","");
+        echo "success";
+        die();
+    }
+endif;
+if (!function_exists('send_accept_notification')):
+    function send_accept_notification() {
+        global $wpdb;
+        $to_user_id = $_POST['to_user_id'];
+        $my_id = get_current_user_id();
+
+        $my_role = get_the_author_meta('user_role',$my_id);
+        $from_user_role = get_the_author_meta('user_role',$to_user_id);
+
+        $my_gender = get_the_author_meta('gender',$my_id);
+        $from_gender = get_the_author_meta('gender',$to_user_id);
+
+
+        $relation = 0;
+        $relation_reverse = 0;
+        echo $my_role;
+        if ($my_role == "student") {
+            if ($from_user_role == "parent") {
+                if ($from_gender == 1) {
+                    $relation = 2; // student - dad
+                } else {
+                    $relation = 1;  // student - mom
+                }
+                $relation_reverse = 3;
+            }
+            if ($from_user_role == "student") {
+                $relation = 4; // student- student
+                $relation_reverse = 4;
+             }
+        }
+        if ($my_role == "parent") {
+
+            if ($my_gender == 1) {
+                $relation_reverse = 2; }
+            else  {
+                $relation_reverse = 1;
+            }
+            $relation = 3;
+        }
+
+        $wpdb->insert( 'wpo6_relation', array(
+            'MY_ID' => $my_id,
+            'Relation_ID' => $to_user_id,
+            'Relation' => $relation),
+            array( '%s', '%s', '%s')
+        );
+        $wpdb->insert( 'wpo6_relation', array(
+            'MY_ID' => $to_user_id,
+            'Relation_ID' => $my_id,
+            'Relation' => $relation_reverse),
+            array( '%s', '%s', '%s')
+        );
+//        $user_id = get_current_user_id();
+		delete_user_meta($my_id,$my_id.'_new_notifications');
+        echo "success";
+        die();
+    }
+endif;
+
+if (!function_exists('parent_form_process')):
+    function parent_form_process() {
+        global $wpdb;
+
+        $wpqa_user_id = get_current_user_id();
+//        wpqa_get_user_id();
+        $fname = $_POST['first_name'];
+        $lname = $_POST['last_name'];
+        $nric = $_POST['nric'];
+        $type = $_POST['type'];
+
+
+        $query = "SELECT ID FROM wpo6_users";
+        $user_ids = $wpdb->get_results($query);
+        $my_role = get_the_author_meta('user_role',$wpqa_user_id);
+
+        $match_user = array();
+        $match_ids = array();
+        $find_role = "";
+        if ($type == 1 ) {
+            if ($my_role == "student")
+                $find_role = "parent";
+            else $find_role = "student";
+        } else if ($type == 2) {
+            $find_role = $my_role;
+        }
+
+        foreach ($user_ids as $user_id) {
+            if ($user_id == $wpqa_user_id)
+                continue;
+            $user_fname = get_the_author_meta('first_name',$user_id->ID);
+            $user_lname = get_the_author_meta('last_name',$user_id->ID);
+            $user_nric  = get_the_author_meta('nric',$user_id->ID);
+            $user_role  = get_the_author_meta('user_role',$user_id->ID);
+
+
+            array_push($match_ids,[$user_id,$user_fname ,$user_lname ,  $user_nric ,$user_role]);
+
+                if ($fname == $user_fname && $user_lname == $lname && $user_nric == $nric && $find_role == $user_role) {
+                    //$match_ids[0] = $user_id->ID;
+                    $match_id = $user_id->ID;
+                    $query1 = "SELECT * FROM wpo6_relation WHERE MY_ID=".$wpqa_user_id." AND Relation_ID=".$match_id;
+                    $result1 = $wpdb->get_results($query1);
+                    if (count($result1) == 0) {
+                        $avatar = wpqa_get_user_avatar(array("user_id" => $user_id->ID,"size" => '120'));
+                        $user_name = $user_fname;
+                        $user_name .= $user_lname;
+                        $match_user['user_id'] = $match_id;
+                        $match_user['user_name'] = $user_name;
+                        $match_user['avatar'] = $avatar;
+                        $match_user['my_id'] = $wpqa_user_id;
+                    }
+                    break;
+                }
+
+        }
+        echo  json_encode($match_user);
+        die();
+    }
+endif;

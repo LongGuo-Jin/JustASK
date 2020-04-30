@@ -23,10 +23,11 @@
 define( 'DB_NAME', 'shepher7_wp180' );
 
 /** MySQL database username */
-define( 'DB_USER', 'shepher7_wp180' );
+define( 'DB_USER', 'root' );
 
 /** MySQL database password */
-define( 'DB_PASSWORD', 'pp59!8S8@f' );
+//define( 'DB_PASSWORD', 'pp59!8S8@f' );
+define( 'DB_PASSWORD', '' );
 
 /** MySQL hostname */
 define( 'DB_HOST', 'localhost' );
@@ -77,7 +78,7 @@ $table_prefix = 'wpo6_';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define( 'WP_DEBUG', false );
+define( 'WP_DEBUG', true );
 
 /* That's all, stop editing! Happy publishing. */
 

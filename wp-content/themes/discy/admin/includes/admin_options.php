@@ -45,7 +45,6 @@ class discy_admin_options {
 		// Checks if options are available
     	if ( $options ) {
 			add_action('admin_menu', array( $this, 'discy_add_admin' ) );
-
 		}
     }
 
@@ -92,6 +91,8 @@ class discy_admin_options {
 	function discy_add_admin() {
 		$this->discy_menu_page(discy_theme_name.' Settings', discy_theme_name ,'manage_options', 'options' , array( $this, 'options_page' ),"dashicons-admin-site" );
 	}
+
+
 
 	/* Builds out the options panel */
 	function options_page() {?>

@@ -77,8 +77,71 @@ function discy_admin_options() {
 	);
 
 	$options = apply_filters('discy_options_before_general_setting',$options);
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - first name','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_first',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - last name','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_last',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - password','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_password',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - Confirm Password','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_confirm_password',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Help Message for sign up - NRIC','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'tooltip_signup_nric',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Help Message for sign up - Email','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'tooltip_signup_email',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - Email1','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_email1',
+        'type' => 'text'
+    );
+
+    $options[] = array(
+        'name' => esc_html__('Error Message for sign up - Email2','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'error_signup_email2',
+        'type' => 'text'
+	);
 	
 	$options[] = array(
+        'name' => esc_html__('Success Message for sign up ','discy'),
+        'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
+        'id'   => 'success_signup_message',
+        'type' => 'text'
+    );
+
+    $options[] = array(
 		'name' => esc_html__('Activate the lightbox at the site','discy'),
 		'desc' => esc_html__('Select ON if you want to active the lightbox at the site.','discy'),
 		'id'   => 'active_lightbox',
@@ -6274,6 +6337,8 @@ function discy_admin_options() {
 		"phone"         => array("sort" => esc_html__('Phone','discy'),"value" => "phone"),
 		"gender"        => array("sort" => esc_html__('Gender','discy'),"value" => "gender"),
 		"age"           => array("sort" => esc_html__('Age','discy'),"value" => "age"),
+        "nric"          => array("sort" => esc_html__('NRIC' , 'discy'),"value"=>"nric"),
+        "user_role"     => array("sort" => esc_html__('User Role' , 'discy'),"value"=>"user_role"),
 	);
 	$register_items_std = array(
 		"username"      => array("sort" => esc_html__('Username','discy'),"value" => "username","default" => "yes"),
@@ -6290,7 +6355,9 @@ function discy_admin_options() {
 		"phone"         => array("sort" => esc_html__('Phone','discy'),"value" => ""),
 		"gender"        => array("sort" => esc_html__('Gender','discy'),"value" => ""),
 		"age"           => array("sort" => esc_html__('Age','discy'),"value" => ""),
-	);
+        "nric"          => array("sort" => esc_html__('NRIC' , 'discy'),"value"=>""),
+        "user_role"     => array("sort" => esc_html__('User Role' , 'discy'),"value"=>""),
+    );
 
 	$options[] = array(
 		'name'    => esc_html__("Select what's show at register form","discy"),

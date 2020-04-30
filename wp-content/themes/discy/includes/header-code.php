@@ -385,6 +385,29 @@ $confirm_email = (class_exists("WPQA")?wpqa_users_confirm_mail():"");?>
 	if ($blog_h_where == "header") {
 		include locate_template("includes/blog-header-footer.php");
 	}?>
+    <div class="send_relation_wrap-pop2" >
+        <div class="card-container">
+            <button class="cancel-button" name="send_relation_cancel" id="send_accept_cancel"> X </button>
+            <div class="avatar">
+                <img class="round" id="send_accept_from_user_avatar"
+                     src="https://randomuser.me/api/portraits/women/79.jpg"
+                     alt="user"
+                />
+            </div>
+            <h3 class="user_name" id="send_accept_username">Ricky Park</h3>
+            <h5 id="send_accept_description">
+                Yeah! We found who you are looking for, shall I send a request for link?
+            </h5>
+
+            <form action="" method="post"  enctype="multipart/form-data" class="send_accept_notification">
+                <input type="hidden" name="send_accept_to_user_id" id="send_accept_to_user_id">
+
+                <button type="submit" class="button-default" name="send_accept_yes" id="send_accept_yes">Accept</button>
+                <button class="button-default" name="send_accept_no" id="send_accept_no">Decline</button>
+            </form>
+
+        </div>
+    </div>
 	<div class="discy-content">
 		<div class="discy-inner-content <?php echo ($confirm_email == "yes" || $site_users_only == "yes"?"main_full":discy_sidebars())?>">
 			<?php do_action("discy_after_inner_content")?>

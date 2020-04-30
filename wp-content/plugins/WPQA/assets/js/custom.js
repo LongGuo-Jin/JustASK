@@ -1530,18 +1530,63 @@
 				}
 				
 				var fromSerialize = thisform.serialize();
+                jQuery('#signup_first_name_error',thisform).removeClass("wpqa-error");
+                jQuery('#signup_last_name_error',thisform).removeClass("wpqa-error");
+                jQuery('#signup_email_error',thisform).removeClass("wpqa-error");
+                jQuery('#signup_pass_error',thisform).removeClass("wpqa-error");
+                jQuery('#signup_confirmpass_error',thisform).removeClass("wpqa-error");
 				jQuery.post(wpqa_js.admin_url,fromSerialize,function(response) {
 					var result = jQuery.parseJSON(response);
+					console.log(fromSerialize);
+					var data = result.data;
 					if (result != null && result.success != null && result.success == 1) {
+						console.log("success",result);
 						if (whatAction == "password") {
 							jQuery('input[type="email"]',thisform).val("");
 							jQuery('.wpqa_captcha',thisform).val("");
 							jQuery(".wpqa_success",thisform).html(result.done).animate({opacity: 'show' , height: 'show'}, 400).delay(5000).animate({opacity: 'hide' , height: 'hide'}, 400);
 						}else {
-							window.location = result.redirect;
+							if (fromSerialize['form_type'] == "wpqa-signup") {
+                                jQuery('#signup-panel .icon-cancel').click();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: result.success_msg,
+                                    showConfirmButton: false,
+                                    // timer: 3500
+                                })
+                                setTimeout(function(){ window.location = result.redirect; }, 1000);
+                                // window.location = result.redirect;
+
+							} else {
+                                window.location = result.redirect;
+							}
+
 						}
 					}else if (result != null && result.error) {
-						jQuery(".wpqa_error",thisform).html('<span class="required-error">'+result.error+'</span>').animate({opacity: 'show' , height: 'show'}, 400).delay(5000).animate({opacity: 'hide' , height: 'hide'}, 400);
+						// jQuery(".wpqa_error",thisform).html('<span class="required-error">'+result.error+'</span>').animate({opacity: 'show' , height: 'show'}, 400).delay(5000).animate({opacity: 'hide' , height: 'hide'}, 400);
+                       if (fromSerialize['form_type'] == "wpqa-signup") {
+                           if (data['first_name'] == 1) {
+                               jQuery('#signup_first_name_error',thisform).addClass("wpqa-error");
+                           }
+                           if (data['last_name'] == 1) {
+                               jQuery('#signup_last_name_error',thisform).addClass("wpqa-error");
+                           }
+                           if (data['email'] == 1 || data['email'] == 2) {
+                               jQuery('#signup_email_error',thisform).addClass("wpqa-error");
+                               jQuery('#email_error_type_1',thisform).html(data['email_msg']) ;
+                           } else if (data['email'] == 3) {
+                               jQuery('#signup_email_error',thisform).addClass("wpqa-error");
+                               jQuery('#email_error_type_1',thisform).html(data['email_msg']) ;
+                           }
+                           if (data['pass'] == 1) {
+                               jQuery('#signup_pass_error',thisform).addClass("wpqa-error");
+                           } else if (data['pass'] == 2) {
+                               jQuery('#signup_confirmpass_error',thisform).addClass("wpqa-error");
+                           }
+
+					   } else {
+                           jQuery(".wpqa_error",thisform).html('<span class="required-error">'+result.error+'</span>').animate({opacity: 'show' , height: 'show'}, 400).delay(5000).animate({opacity: 'hide' , height: 'hide'}, 400);
+					   }
 					}else {
 						return true;
 					}
@@ -1831,7 +1876,10 @@
 			});
 		}
 	});
-	
+	/////////////////
+
+
+	////////////////
 	/* Close */
 	
 	jQuery(document).keyup(function(event) {

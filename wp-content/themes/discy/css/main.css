@@ -4773,6 +4773,10 @@ blockquote.alignright {
 .panel-pop .wpqa_login.wpqa_form .wpqa_captcha_span,.panel-pop .signup_form.wpqa_form .wpqa_captcha_span {
 	line-height: 22px;
 }
+.panel-pop .signup_form {
+    margin-left: 20px;
+    margin-right: 20px;
+}
 .best-answer {
 	border-color: #26aa6c;
 	color: #26aa6c;
@@ -5806,13 +5810,13 @@ body:not(.discy-boxed) .question-2-columns .question-sticky-ribbon {
 	background: rgba(39, 41, 48, .95);
 }
 .panel-pop {
-	width: 390px;
+	width: 480px;
 	position: absolute;
 	top: -100%;
 	left: 50%;
-	margin-left: -195px;
+	margin-left: -240px;
 	z-index: 99999;
-	overflow: hidden;
+	/*overflow: hidden;*/
 	display: none;
 }
 .panel-pop-content,.panel-image-inner {
@@ -5827,7 +5831,7 @@ body:not(.discy-boxed) .question-2-columns .question-sticky-ribbon {
 	margin-bottom: 10px;
 }
 .pop-border-radius {
-	overflow: hidden;
+	/*overflow: hidden;*/
 	position: relative;
 }
 .pop-header,.pop-footer {

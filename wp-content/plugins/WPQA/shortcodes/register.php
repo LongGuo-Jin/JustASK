@@ -51,28 +51,50 @@ if (!function_exists('wpqa_signup_attr')) :
 					if (isset($register_items) && is_array($register_items) && !empty($register_items)) {
 						foreach ($register_items as $sort_key => $sort_value) {
 							$out = apply_filters("wpqa_register_sort",$out,"register_items",$register_items,$sort_key,$sort_value,"register",$posted);
-							if ($sort_key == "username" && isset($sort_value["value"]) && $sort_value["value"] == "username") {
+//							if ($sort_key == "username" && isset($sort_value["value"]) && $sort_value["value"] == "username") {
+//								$out .= '<p class="'.$sort_key.'_field">
+//									<label for="user_name_'.$rand_r.'">'.esc_html__("Username","wpqa").'<span class="required">*</span></label>
+//									<input style="margin-top: 3px" type="text" class="required-item" name="user_name" id="user_name_'.$rand_r.'" value="'.(isset($posted["user_name"])?$posted["user_name"]:"").'">
+//									<i class="icon-user"></i>
+//								</p>'.apply_filters('wpqa_register_after_username',false,$posted);
+//							}else
+                            if ($sort_key == "email" && isset($sort_value["value"]) && $sort_value["value"] == "email") {
 								$out .= '<p class="'.$sort_key.'_field">
-									<label for="user_name_'.$rand_r.'">'.esc_html__("Username","wpqa").'<span class="required">*</span></label>
-									<input type="text" class="required-item" name="user_name" id="user_name_'.$rand_r.'" value="'.(isset($posted["user_name"])?$posted["user_name"]:"").'">
-									<i class="icon-user"></i>
-								</p>'.apply_filters('wpqa_register_after_username',false,$posted);
-							}else if ($sort_key == "email" && isset($sort_value["value"]) && $sort_value["value"] == "email") {
-								$out .= '<p class="'.$sort_key.'_field">
-									<label for="email_'.$rand_r.'">'.esc_html__("E-Mail","wpqa").'<span class="required">*</span></label>
-									<input type="email" class="required-item" name="email" id="email_'.$rand_r.'" value="'.(isset($posted["email"])?$posted["email"]:"").'">
-									<i class="icon-mail"></i>
+									<div id="signup_email_error">
+                                        <label for="email_'.$rand_r.'">'.esc_html__("E-Mail","wpqa").'<span class="required">*</span></label>
+									    <div class="wpqa-input">
+                                            <input placeholder="sample@email.com" type="text" class="required-item" name="email" id="email_'.$rand_r.'" value="'.(isset($posted["email"])?$posted["email"]:"").'">
+                                            <i class="icon-mail left-icon" ></i>
+                                            <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                                            <div class="help-tip">
+                                                <p>'.wpqa_options('tooltip_signup_email').'</p>
+                                            </div>
+                                            <p style="display: none" id="email_error_type_1">'.wpqa_options('error_signup_email1').'</p>
+                                        </div>
+                                    </div>
 								</p>';
-							}else if ($sort_key == "password" && isset($sort_value["value"]) && $sort_value["value"] == "password") {
+							} else if ($sort_key == "password" && isset($sort_value["value"]) && $sort_value["value"] == "password") {
 								$out .= '<p class="'.$sort_key.'_field">
-									<label for="pass1_'.$rand_r.'">'.esc_html__("Password","wpqa").'<span class="required">*</span></label>
-									<input type="password" class="required-item" name="pass1" id="pass1_'.$rand_r.'" autocomplete="off">
-									<i class="icon-lock-open"></i>
+                                    <div id="signup_pass_error">
+                                        <label for="pass1_'.$rand_r.'">'.esc_html__("Password","wpqa").'<span class="required">*</span></label>
+                                        <div class="wpqa-input">
+                                            <input type="password" class="required-item" name="pass1" id="pass1_'.$rand_r.'" autocomplete="off">
+                                            <i class="icon-lock-open left-icon"></i>
+                                            <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                                            <p style="display: none">'.wpqa_options('error_signup_password').'</p>
+                                        </div>
+                                    </div>
 								</p>
 								<p class="'.$sort_key.'_2_field">
-									<label for="pass2_'.$rand_r.'">'.esc_html__("Confirm Password","wpqa").'<span class="required">*</span></label>
-									<input type="password" class="required-item" name="pass2" id="pass2_'.$rand_r.'" autocomplete="off">
-									<i class="icon-lock"></i>
+								    <div id="signup_confirmpass_error">
+                                        <label for="pass2_'.$rand_r.'">'.esc_html__("Confirm Password","wpqa").'<span class="required">*</span></label>
+                                        <div class="wpqa-input">
+                                            <input type="password" class="required-item" name="pass2" id="pass2_'.$rand_r.'" autocomplete="off">
+                                            <i class="icon-lock left-icon"></i>
+                                            <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                                            <p style="display: none">'.wpqa_options('error_signup_confirm_password').'</p>
+                                        </div>
+									</div>
 								</p>'.apply_filters('wpqa_register_after_password',false,$posted);
 							}
 							$out .= wpqa_register_edit_fields($sort_key,$sort_value,"register",$rand_r);
@@ -115,6 +137,7 @@ if (!function_exists('wpqa_signup_attr')) :
 					<input type="hidden" name="wpqa_signup_nonce" value="'.wp_create_nonce("wpqa_signup_nonce").'">
 					<input type="submit" name="register" value="'.esc_attr__("Signup","wpqa").'" class="button-default button-hide-click'.(isset($a["dark_button"]) && $a["dark_button"] == "dark_button"?" dark_button":"").'">
 				</p>
+                </div>
 			</form>';
 		}
 		return $out;
@@ -130,7 +153,7 @@ if (!function_exists('wpqa_signup_jquery')) :
 		if ( isset( $_REQUEST['redirect_to'] ) ) $redirect_to = $_REQUEST['redirect_to']; else $redirect_to = esc_url(home_url('/'));
 		// Process signup form
 		$posted = array(
-			'user_name'    => esc_html($_POST['user_name']),
+//			'user_name'    => esc_html($_POST['user_name']),
 			'email'        => esc_html($_POST['email']),
 			'pass1'        => esc_html($_POST['pass1']),
 			'pass2'        => esc_html($_POST['pass2']),
@@ -145,34 +168,49 @@ if (!function_exists('wpqa_signup_jquery')) :
 			'phone'        => (isset($_POST['phone']) && $_POST['phone'] != ""?esc_html($_POST['phone']):""),
 			'gender'       => (isset($_POST['gender']) && $_POST['gender'] != ""?esc_html($_POST['gender']):""),
 			'age'          => (isset($_POST['age']) && $_POST['age'] != ""?esc_html($_POST['age']):""),
+            'nric'         => (isset($_POST['nric']) && $_POST['nric'] != ""?esc_html($_POST['nric']):""),
+            'user_role'    => (isset($_POST['user_role']) && $_POST['user_role'] != ""?esc_html($_POST['user_role']):""),
 			'redirect_to'  => $_POST['redirect_to'],
 		);
 
 		$posted = apply_filters('wpqa_register_posted',$posted);
 
 		$posted = array_map('stripslashes', $posted);
-		$posted['username'] = sanitize_user((isset($posted['username'])?$posted['username']:""));
+//		$posted['username'] = sanitize_user((isset($posted['username'])?$posted['username']:""));
 		// Validation
-		if ( empty($posted['user_name']) ) {
-			$errors->add('required-username',esc_html__("Please enter your name.","wpqa"));
-		}
-		if ( $allow_spaces != "on" && $posted['user_name'] == trim($posted['user_name']) && strpos($posted['user_name'], ' ') !== false ) {
-			$errors->add('error-username',esc_html__("Please enter your name without any spaces.","wpqa"));
-		}
-		if ( empty($posted['email']) ) {
+//		if ( empty($posted['user_name']) ) {
+//			$errors->add('required-username',esc_html__("Please enter your name.","wpqa"));
+//		}
+//		if ( $allow_spaces != "on" && $posted['user_name'] == trim($posted['user_name']) && strpos($posted['user_name'], ' ') !== false ) {
+//			$errors->add('error-username',esc_html__("Please enter your name without any spaces.","wpqa"));
+//		}
+        $result_b = array();
+        if ( empty($posted['first_name']) ) {
+            $errors->add('required-email',esc_html__("Please enter your first name.","wpqa"));
+            $result_b['first_name'] = 1;
+        }
+        if ( empty($posted['last_name']) ) {
+            $errors->add('required-email',esc_html__("Please enter your last name.","wpqa"));
+            $result_b['last_name'] = 1;
+        }
+
+        if ( empty($posted['email']) ) {
 			$errors->add('required-email',esc_html__("Please enter your email.","wpqa"));
+            $result_b['email'] = 1;
+            $result_b['email_msg'] = wpqa_options('error_signup_email1');
 		}
 		if ( empty($posted['pass1']) ) {
 			$errors->add('required-pass1',esc_html__("Please enter your password.","wpqa"));
-		}
-		if ( empty($posted['pass2']) ) {
+            $result_b['pass'] = 1;
+		} else if ( empty($posted['pass2']) ) {
 			$errors->add('required-pass2',esc_html__("Please rewrite password.","wpqa"));
-		}
-		if ( $posted['pass1'] !== $posted['pass2'] ) {
+            $result_b['pass'] = 2;
+		} else if ( $posted['pass1'] !== $posted['pass2'] ) {
 			$errors->add('required-pass1',esc_html__("Password does not match.","wpqa"));
+            $result_b['pass'] = 2;
 		}
 
-		do_action('wpqa_register_errors_main',$errors,$posted,$register_items,"register");
+        do_action('wpqa_register_errors_main',$errors,$posted,$register_items,"register");
 		
 		wpqa_check_captcha(wpqa_options("the_captcha_register"),"register",$posted,$errors);
 		
@@ -180,15 +218,31 @@ if (!function_exists('wpqa_signup_jquery')) :
 		if ($terms_active_register == "on" && $posted['agree_terms'] != "on") {
 			$errors->add('required-terms', esc_html__("There are required fields (Agree of the terms).","wpqa"));
 		}
+
+		$posted['user_name']= $posted['first_name'];
+        $posted['user_name'] .= $posted['last_name'];
+        $posted['user_name'] .= wpqa_token(4);
 		// Check the username
-		if ( username_exists( $posted['user_name'] ) ) :
-			$errors->add('registered-username',esc_html__("This username is already registered.","wpqa"));
-		endif;
+		while ( username_exists( $posted['user_name'] ) ) {
+
+			$posted['user_name']= $posted['first_name'];
+			$posted['user_name'] .= $posted['last_name'];
+			$posted['user_name'] .= wpqa_token(4); 
+		}
 		// Check the e-mail address
 		if ( !is_email( $posted['email'] ) ) :
-			$errors->add('right-email',esc_html__("Please write correctly email.","wpqa"));
+            {
+                $errors->add('right-email',esc_html__("Please write correctly email.","wpqa"));
+                $result_b["email"] = 2;
+                $result_b['email_msg'] = wpqa_options('error_signup_email1');
+            }
 		elseif ( email_exists( $posted['email'] ) ) :
-			$errors->add('registered-email',esc_html__("This email is already registered.","wpqa"));
+            {
+                $errors->add('registered-email',esc_html__("This email is already registered.","wpqa"));
+                $result_b["email"] = 3;
+                $result_b['email_msg'] = wpqa_options('error_signup_email2');
+
+            }
 		endif;
 
 		$black_list_emails = wpqa_options("black_list_emails");
@@ -196,6 +250,8 @@ if (!function_exists('wpqa_signup_jquery')) :
 			foreach ($black_list_emails as $value) {
 				if (strpos($posted['email'],$value["email"]) !== false) {
 					$errors->add('wrong-email',esc_html__("Sorry, This email or domain are not allowing to register, Please try another email.","wpqa"));
+                    $result_b["email"] = 3;
+                    $result_b['email_msg'] = wpqa_options('error_signup_email2');
 				}
 			}
 		}
@@ -211,8 +267,9 @@ if (!function_exists('wpqa_signup_jquery')) :
 			if ( !$errors->get_error_code() ) :
 				$user_id = wp_create_user($posted['user_name'],$posted['pass1'],$posted['email']);
 				if (is_wp_error($user_id)) {
-					$errors->add('error', sprintf('<strong>'.esc_html__('Error:','wpqa').'</strong> '.esc_html__('Sorry, You can not register, Please contact the webmaster','wpqa').': ',get_option('admin_email')));
+					$errors->add('error', sprintf('<strong>'.$posted['user_name'].'</strong> '.esc_html__('Sorry, You can not register, Please contact the webmaster','wpqa').': ',get_option('admin_email')));
 					$result['success'] = 0;
+					$result['data'] = $result_b;
 					foreach ($errors->errors as $error) {
 						$result['error'] = $error[0];
 						break;
@@ -284,6 +341,7 @@ if (!function_exists('wpqa_signup_jquery')) :
 					}
 					if (wpqa_is_ajax()) {
 						$result['success'] = 1;
+						$result['success_msg'] = wpqa_options('success_signup_message');
 						$result['redirect'] = $redirect_to;
 					}else {
 						wp_safe_redirect($redirect_to);
@@ -293,6 +351,7 @@ if (!function_exists('wpqa_signup_jquery')) :
 			else :
 				if (wpqa_is_ajax()) {
 					$result['success'] = 0;
+                    $result['data'] = $result_b;
 					foreach ($errors->errors as $error) {
 						$result['error'] = $error[0];
 						break;
@@ -302,6 +361,7 @@ if (!function_exists('wpqa_signup_jquery')) :
 		else :
 			if (wpqa_is_ajax()) {
 				$result['success'] = 0;
+                $result['data'] = $result_b;
 				foreach ($errors->errors as $error) {
 					$result['error'] = $error[0];
 					break;
@@ -454,25 +514,64 @@ function wpqa_register_edit_fields($key_items,$value_items,$type,$rand,$user = o
 	if ($key_items == "nickname" && isset($value_items["value"]) && $value_items["value"] == "nickname") {
 		$out .= '<p class="'.$key_items.'_field">
 			<label for="nickname_'.$rand.'">'.esc_html__("Nickname","wpqa").'<span class="required">*</span></label>
-			<input'.$readonly.' name="nickname" id="nickname_'.$rand.'" type="text" value="'.(isset($_POST["nickname"])?esc_attr($_POST["nickname"]):($type == "edit"?esc_attr($user->nickname):"")).'">
+			<input style="margin-top: 3px" '.$readonly.' name="nickname" id="nickname_'.$rand.'" type="text" value="'.(isset($_POST["nickname"])?esc_attr($_POST["nickname"]):($type == "edit"?esc_attr($user->nickname):"")).'">
 			<i class="icon-vcard"></i>
 		</p>';
 	}else if ($key_items == "first_name" && isset($value_items["value"]) && $value_items["value"] == "first_name") {
 		$out .= '<p class="'.$key_items.'_field">
-			<label for="first_name_'.$rand.'">'.esc_html__("First Name","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.($key_required == "on"?' class="required-item"':'').$readonly.' name="first_name" id="first_name_'.$rand.'" type="text" value="'.(isset($_POST["first_name"])?esc_attr($_POST["first_name"]):($type == "edit"?esc_attr($user->first_name):"")).'">
-			<i class="icon-user"></i>
+		     <div id="signup_first_name_error">
+                <label for="first_name_'.$rand.'">'.esc_html__("First Name","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
+                <div class="wpqa-input">
+                    <input placeholder="John"  '.($key_required == "on"?' class="required-item"':'').$readonly.' name="first_name" id="first_name_'.$rand.'" type="text" value="'.(isset($_POST["first_name"])?esc_attr($_POST["first_name"]):($type == "edit"?esc_attr($user->first_name):"")).'">
+                    <i class="icon-user left-icon"></i>
+                    <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                    <p style="display: none">'.wpqa_options("error_signup_first").'</p>  
+                </div>
+            </div> 
+               
 		</p>';
 	}else if ($key_items == "last_name" && isset($value_items["value"]) && $value_items["value"] == "last_name") {
 		$out .= '<p class="'.$key_items.'_field">
+		<div id="signup_last_name_error">	
 			<label for="last_name_'.$rand.'">'.esc_html__("Last Name","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.($key_required == "on"?' class="required-item"':'').$readonly.' name="last_name" id="last_name_'.$rand.'" type="text" value="'.(isset($_POST["last_name"])?esc_attr($_POST["last_name"]):($type == "edit"?esc_attr($user->last_name):"")).'">
-			<i class="icon-users"></i>
+			<div class="wpqa-input">
+                <input placeholder="Doe" style="margin-top: 3px" '.($key_required == "on"?' class="required-item"':'').$readonly.' name="last_name" id="last_name_'.$rand.'" type="text" value="'.(isset($_POST["last_name"])?esc_attr($_POST["last_name"]):($type == "edit"?esc_attr($user->last_name):"")).'">
+                <i class="icon-users left-icon"></i>
+                <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                <p style="display: none">'.wpqa_options("error_signup_last").'</p> 
+			</div>
+        </div>
 		</p>';
-	}else if ($key_items == "display_name" && isset($value_items["value"]) && $value_items["value"] == "display_name") {
+	}else if ($key_items == "nric" && isset($value_items["value"]) && $value_items["value"] == "nric") {
+		$out .= '<p class="'.$key_items.'_field">
+		<div id="signup_nric_error">	
+			<label for="nric'.$rand.'">'.esc_html__("Nric*","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
+			<div class="wpqa-input">
+                <input placeholder="Only last 4 characters behind" '.($key_required == "on"?' class="required-item"':'').$readonly.' name="nric" maxlength="4" id="nric_'.$rand.'" type="text" value="'.(isset($_POST["nric"])?esc_attr($_POST["nric"]):($type == "edit"?esc_attr($user->nric):"")).'">
+                <i class="icon-user left-icon"></i>
+                <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+                <div class="help-tip">
+				    <p>'.wpqa_options("tooltip_signup_nric").'</p>
+			    </div>
+			</div>
+        </div>
+		</p>';
+	}else if ($key_items == "user_role" && isset($value_items["value"]) && $value_items["value"] == "user_role") {
+        $out .= '<p class="'.$key_items.'_field">
+			<label for="user_role'.$rand.'">'.esc_html__("Role*","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
+            <span class="styled-select" >
+				<select name="user_role" style="padding-left: 30px;margin-top: 3px" id="user_role_\'.$rand.\'" \'.($key_required == "on"?\'class="required-item"\':\'\').\'>
+					<option value="student">'.esc_html__( 'Student', 'wpqa' ).'</option>
+					<option value="parent">'.esc_html__( 'Parent', 'wpqa' ).'</option>
+					<option value="teacher">'.esc_html__( 'Teacher', 'wpqa' ).'</option>	
+			    </select>
+			</span>
+			<i class="icon-user"></i>
+		</p>';
+    }else if ($key_items == "display_name" && isset($value_items["value"]) && $value_items["value"] == "display_name") {
 		$out .= '<p class="'.$key_items.'_field">
 			<label for="display_name_'.$rand.'">'.esc_html__("Display Name","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.($key_required == "on"?' class="required-item"':'').$readonly.' name="display_name" id="display_name_'.$rand.'" type="text" value="'.(isset($_POST["display_name"])?esc_attr($_POST["display_name"]):($type == "edit"?esc_attr($user->display_name):"")).'">
+			<input  '.($key_required == "on"?' class="required-item"':'').$readonly.' name="display_name" id="display_name_'.$rand.'" type="text" value="'.(isset($_POST["display_name"])?esc_attr($_POST["display_name"]):($type == "edit"?esc_attr($user->display_name):"")).'">
 			<i class="icon-user"></i>
 		</p>';
 		$out .= apply_filters('wpqa_edit_profile_after_names',false,$user->ID);
@@ -535,13 +634,13 @@ function wpqa_register_edit_fields($key_items,$value_items,$type,$rand,$user = o
 	}else if ($key_items == "city" && isset($value_items["value"]) && $value_items["value"] == "city") {
 		$out .= '<p class="'.$key_items.'_field">
 			<label for="city_'.$rand.'">'.esc_html__("City","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.($key_required == "on"?' class="required-item"':'').$readonly.' type="text" name="city" id="city_'.$rand.'" value="'.(isset($_POST["city"])?esc_attr($_POST["city"]):($type == "edit"?esc_attr($user_meta):"")).'">
+			<input '.($key_required == "on"?' class="required-item"':'').$readonly.' type="text" name="city" id="city_'.$rand.'" value="'.(isset($_POST["city"])?esc_attr($_POST["city"]):($type == "edit"?esc_attr($user_meta):"")).'">
 			<i class="icon-address"></i>
 		</p>';
 	}else if ($key_items == "phone" && isset($value_items["value"]) && $value_items["value"] == "phone") {
 		$out .= '<p class="'.$key_items.'_field">
 			<label for="phone_'.$rand.'">'.esc_html__("Phone","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.($key_required == "on"?' class="required-item"':'').$readonly.' type="text" name="phone" id="phone_'.$rand.'" value="'.(isset($_POST["phone"])?esc_attr($_POST["phone"]):($type == "edit"?esc_attr($user_meta):"")).'">
+			<input '.($key_required == "on"?' class="required-item"':'').$readonly.' type="text" name="phone" id="phone_'.$rand.'" value="'.(isset($_POST["phone"])?esc_attr($_POST["phone"]):($type == "edit"?esc_attr($user_meta):"")).'">
 			<i class="icon-phone"></i>
 		</p>';
 	}else if ($key_items == "gender" && isset($value_items["value"]) && $value_items["value"] == "gender") {
@@ -550,11 +649,11 @@ function wpqa_register_edit_fields($key_items,$value_items,$type,$rand,$user = o
 		$out .= '<p class="'.$key_items.'_field wpqa_radio_p"><label>'.esc_html__("Gender","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label></p>
 		<div class="wpqa_radio_div">
 			<p>
-				<span class="wpqa_radio"><input id="gender_male_'.$rand.'" name="gender" type="radio" value="1"'.($last_gender == "male" || $last_gender == "1"?' checked="checked"':'').'></span>
+				<span class="wpqa_radio"><input id="gender_male_'.$rand.'" name="gender" type="radio" value="1" checked></span>
 				<label for="gender_male_'.$rand.'">'.esc_html__("Male","wpqa").'</label>
 			</p>
 			<p>
-				<span class="wpqa_radio"><input id="gender_female_'.$rand.'" name="gender" type="radio" value="2"'.($last_gender == "female" || $last_gender == "2"?' checked="checked"':'').'></span>
+				<span class="wpqa_radio"><input id="gender_female_'.$rand.'" name="gender" type="radio" value="2"></span>
 				<label for="gender_female_'.$rand.'">'.esc_html__("Female","wpqa").'</label>
 			</p>';
 			if ($gender_other == "on") {
@@ -567,9 +666,14 @@ function wpqa_register_edit_fields($key_items,$value_items,$type,$rand,$user = o
 		</div>';
 	}else if ($key_items == "age" && isset($value_items["value"]) && $value_items["value"] == "age") {
 		$out .= '<p class="'.$key_items.'_field">
-			<label for="age_'.$rand.'">'.esc_html__("Age","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
-			<input'.$readonly.' type="text" class="age-datepicker'.($key_required == "on"?' required-item':'').'" name="age" id="age_'.$rand.'" value="'.(isset($_POST["age"])?esc_attr($_POST["age"]):($type == "edit"?esc_attr($user_meta):"")).'">
-			<i class="icon-globe"></i>
+			<div class="signup_dob_error">
+                <label for="age_'.$rand.'">'.esc_html__("DOB","wpqa").($key_required == "on"?'<span class="required">*</span>':'').'</label>
+                <div class="wpqa-input">
+                    <input '.$readonly.' type="text" class="age-datepicker'.($key_required == "on"?' required-item':'').'" name="age" id="age_'.$rand.'" value="'.(isset($_POST["age"])?esc_attr($_POST["age"]):($type == "edit"?esc_attr($user_meta):"")).'">
+                    <i class="icon-globe left-icon"></i>
+                    <i class="fa fa-exclamation-circle right-icon" aria-hidden="true"></i>
+			    </div>
+			</div>
 		</p>';
 	}
 	return $out;
@@ -589,6 +693,8 @@ function wpqa_register_edit_profile_errors($errors,$posted,$sort,$type,$user_id 
 	$phone = (isset($sort["phone"]["value"]) && $sort["phone"]["value"] == "phone"?"on":0);
 	$gender = (isset($sort["gender"]["value"]) && $sort["gender"]["value"] == "gender"?"on":0);
 	$age = (isset($sort["age"]["value"]) && $sort["age"]["value"] == "age"?"on":0);
+    $nric = (isset($sort["nric"]["value"]) && $sort["nric"]["value"] == "nric"?"on":0);
+    $user_role = (isset($sort["user_role"]["value"]) && $sort["user_role"]["value"] == "user_role"?"on":0);
 	$type_name = ($type == "register"?"_register":"");
 
 	$first_name_required = wpqa_options("first_name_required".$type_name);
@@ -601,6 +707,7 @@ function wpqa_register_edit_profile_errors($errors,$posted,$sort,$type,$user_id 
 	$phone_required = wpqa_options("phone_required".$type_name);
 	$gender_required = wpqa_options("gender_required".$type_name);
 	$age_required = wpqa_options("age_required".$type_name);
+    $nric_required = wpqa_options("nric_required".$type_name);
 
 	$user_meta_avatar = wpqa_avatar_name();
 	$user_meta_cover = wpqa_cover_name();
@@ -615,7 +722,7 @@ function wpqa_register_edit_profile_errors($errors,$posted,$sort,$type,$user_id 
 		$errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (Nickname).","wpqa"));
 	}
 	if (empty($_POST['first_name']) && $first_name === "on" && $first_name_required == "on") {
-		$errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (First name).","wpqa"));
+//		$errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (First name).","wpqa"));
 	}
 	if (empty($_POST['last_name']) && $last_name === "on" && $last_name_required == "on") {
 		$errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (Last name).","wpqa"));
@@ -667,6 +774,9 @@ function wpqa_register_edit_profile_errors($errors,$posted,$sort,$type,$user_id 
 	if (empty($_POST['age']) && $age === "on" && $age_required == "on") {
 		$errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (Age).","wpqa"));
 	}
+    if (empty($_POST['nric']) && $nric === "on" && $nric_required == "on") {
+        $errors->add('required-field','<strong>'.esc_html__("Error","wpqa").' :&nbsp;</strong> '.esc_html__("There are required fields (Nric).","wpqa"));
+    }
 	return $errors;
 }
 /* Register and edit profile updated */
@@ -749,7 +859,7 @@ function wpqa_register_edit_profile_updated($user_id,$posted,$files,$type) {
 	}
 
 	if ($type == "register") {
-		$array_posts = array("first_name","last_name","country","city","phone","gender","age");
+		$array_posts = array("first_name","last_name","country","city","phone","gender","age","nric","user_role");
 		foreach ($array_posts as $key => $value) {
 			if (isset($posted[$value]) && $posted[$value] != "") {
 				update_user_meta($user_id,$value,sanitize_text_field($posted[$value]));
