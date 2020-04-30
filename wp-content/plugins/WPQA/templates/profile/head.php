@@ -106,7 +106,7 @@ include wpqa_get_template("head-tabs.php","profile/");?>
                             if (count($sibling_data) > 0) {
                                 foreach ($sibling_data as $index_data) {
                                     ?> <a href="<?php echo esc_url(wpqa_get_profile_permalink($index_data->Relation_ID,"myparents"))?>"> <?php  echo wpqa_get_user_avatar(array("user_id" => $index_data->Relation_ID, "size" => $size)); ?> </a> <?php
-                                    
+
                                 }
                             } else {?>
                             <span>

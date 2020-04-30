@@ -318,8 +318,8 @@ if (!function_exists('wpqa_signup_jquery')) :
 							wpqa_sendEmail($email_template,get_bloginfo('name'),wpqa_options("email_template_to"),get_bloginfo('name'),$email_title,$last_message_email);
 						}
 					}
-					$nickname = ($posted['nickname'] != ""?$posted['nickname']:$posted['user_name']);
-					$display_name = ($posted['display_name'] != ""?$posted['display_name']:$posted['user_name']);
+					$nickname = ($posted['nickname'] != ""?$posted['nickname']:$posted['first_name'].$posted['last_name']);
+					$display_name = ($posted['display_name'] != ""?$posted['display_name']:$posted['first_name'].$posted['last_name']);
 					wp_update_user(array('ID' => $user_id,'role' => ($confirm_email == "on"?'activation':$default_group),'user_nicename' => $nickname,'nickname' => $nickname,'display_name' => $display_name));
 
 					do_action('wpqa_after_register',$user_id,$posted,isset($_FILES)?$_FILES:array(),"register");
